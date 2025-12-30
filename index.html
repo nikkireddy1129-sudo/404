@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scroll Animation</title>
+<style>
+html, body {
+  margin: 0;
+  height: 200vh;
+  background: black;
+}
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="c"></canvas>
+
+<script>
+const videoUrl = "https://res.cloudinary.com/dtemgmap/video/upload/1767116897372417_2_fqnddt.mp4";
+const frameCount = 80;
+
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+const frames = [];
+const video = document.createElement("video");
+video.src = videoUrl;
+video.muted = true;
+video.preload = "auto";
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+video.addEventListener("loadedmetadata", async () => {
+  const duration = video.duration;
+
+  for (let i = 0; i < frameCount; i++) {
+    video.currentTime = (duration / frameCount) * i;
+    await new Promise(r => video.onseeked = r);
+
+    const temp = document.createElement("canvas");
+    temp.width = video.videoWidth;
+    temp.height = video.videoHeight;
+    temp.getContext("2d").drawImage(video, 0, 0);
+    frames.push(temp);
+  }
+
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY;
+    const maxScroll = document.body.scrollHeight - window.innerHeight;
+    const percent = scrollTop / maxScroll;
+    const frameIndex = Math.floor(percent * (frames.length - 1));
+
+    ctx.drawImage(frames[frameIndex], 0, 0, canvas.width, canvas.height);
+  });
+});
+</script>
+
+</body>
+</html>
