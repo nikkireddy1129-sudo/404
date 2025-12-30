@@ -33,6 +33,14 @@ const ctx = canvas.getContext("2d");
 const frames = [];
 const video = document.createElement("video");
 video.src = videoUrl;
+video.crossOrigin = "anonymous";
+video.muted = true;
+video.playsInline = true;
+video.autoplay = true;
+
+video.addEventListener("loadeddata", () => {
+  video.play();
+});
 video.muted = true;
 video.preload = "auto";
 
